@@ -4,7 +4,7 @@
  ***( see copyright.txt file at root folder )*******************************/
 // Based on Falstad Circuit Simulator BJT model: https://falstad.com
 
-/*   Modified (C) 2025 by easyEDAJLC Technology Group                      *
+/*   Modified (C) 2025 by EasyEDA & JLC Technology Group                      *
  *   chensiyu@sz-jlc.com                                                   *
  *                                                                         */
 

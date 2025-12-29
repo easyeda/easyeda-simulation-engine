@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Modified (C) 2025 by easyEDAJLC Technology Group                      *
+ *   Modified (C) 2025 by EasyEDA & JLC Technology Group                      *
  *   chensiyu@sz-jlc.com                                                   *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *

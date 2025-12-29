@@ -3,7 +3,7 @@
  *                                                                         *
  ***( see copyright.txt file at root folder )*******************************/
 
-/*   Modified (C) 2025 by easyEDAJLC Technology Group                      *
+/*   Modified (C) 2025 by EasyEDA & JLC Technology Group                      *
  *   chensiyu@sz-jlc.com                                                   *
  *                                                                         */
 #include "resistor.h"
