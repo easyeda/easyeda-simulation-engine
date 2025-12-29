@@ -1,0 +1,20 @@
+/***************************************************************************
+ *   Copyright (C) 2012 by Santiago González                               *
+ *                                                                         *
+ ***( see copyright.txt file at root folder )*******************************/
+
+/*   Modified (C) 2025 by easyEDAJLC Technology Group                      *
+ *   chensiyu@sz-jlc.com                                                   *
+ *                                                                         */
+
+#pragma once
+
+#include "component.h"
+
+class Comp2Pin : public Component
+{
+    public:
+        Comp2Pin( std::string type, std::string id );
+        ~Comp2Pin(){}
+};
+

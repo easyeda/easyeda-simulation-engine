@@ -1,0 +1,181 @@
+/***************************************************************************
+ *   Copyright (C) 2016 by Santiago González                               *
+ *                                                                         *
+ ***( see copyright.txt file at root folder )*******************************/
+
+/*   Modified (C) 2025 by easyEDAJLC Technology Group                      *
+ *   chensiyu@sz-jlc.com                                                   *
+ *                                                                         */
+
+#include "resistordip.h"
+#include "itemlibrary.h"
+#include "connector.h"
+#include "simulator.h"
+#include "circuit.h"
+#include "pin.h"
+#include "e-resistor.h"
+#include "label.h"
+#include "doubleProp.h"
+#include "intProp.h"
+#include "boolProp.h"
+
+#define tr(str) simulideTr("ResistorDip",str)
+
+eNode ResistorDip::m_puEnode("");
+
+Component* ResistorDip::construct( std::string type, std::string id )
+{ return new ResistorDip( type, id ); }
+
+LibraryItem* ResistorDip::libraryItem()
+{
+    return new LibraryItem(
+        "ResistorDip",
+        "Resistors",
+        "resistordip.png",
+        "ResistorDip",
+        ResistorDip::construct);
+}
+
+ResistorDip::ResistorDip( std::string type, std::string id )
+           : Component( type, id )
+           , eElement( id )
+{
+    m_pullUp = false;
+    m_puVolt = 5;
+
+    m_size = 0;
+    setSize( 8 );
+
+    //setLabelPos(-24,-40, 0);
+    //setValLabelPos( 5,-26, 90 );
+    //m_valLabel->setAcceptedMouseButtons( 0 );
+
+    Simulator::self()->addToUpdateList( this );
+
+    addPropGroup( { "Main", {
+new doubleProp<ResistorDip>( "Resistance", "Resistance","Ω"       , this, &ResistorDip::getRes, &ResistorDip::setRes ),
+new intProp <ResistorDip>( "Size"      , "Size"     ,"_Resist.", this, &ResistorDip::size,   &ResistorDip::setSize, propNoCopy,"uint" ),
+new boolProp<ResistorDip>( "PullUp"    , "Pullup"    ,""        , this, &ResistorDip::pullUp, &ResistorDip::setPullUp ),
+new doubleProp<ResistorDip>( "PuVolt", "Pullup Voltage","V"       , this, &ResistorDip::puVolt, &ResistorDip::setPuVolt ),
+    },0 } );
+
+    //setShowProp("Resistance");
+    setPropStr( "Resistance", "100" );
+}
+ResistorDip::~ResistorDip(){}
+
+void ResistorDip::stamp()
+{
+    if( !m_pullUp ) return;
+    m_puEnode.setVolt( m_puVolt );
+    for( int i=0; i<m_size; i++ )
+    {
+        int index = i*2;
+        m_pin[index+1]->setEnode( &m_puEnode );
+        m_pin[index]->createCurrent();
+        m_pin[index]->stampCurrent( m_puVolt/m_resist );
+    }
+}
+
+void ResistorDip::updateStep()
+{
+    if( !m_changed ) return;
+    m_changed = false;
+
+    for( eResistor* res : m_resistor ) res->setRes( m_resist );
+}
+
+void ResistorDip::createResistors( int c )
+{
+    int start = m_size;
+    m_size = m_size+c;
+    m_resistor.resize( m_size );
+    m_pin.resize( m_size*2 );
+
+    for( int i=start; i<m_size; i++ )
+    {
+        int index = i*2;
+        std::string reid = m_id;
+        reid.append(std::string("-resistor"+std::to_string(i)));
+        m_resistor[i] = new eResistor( reid );
+
+        m_pin[index] = new Pin(  reid+"-ePin"+std::to_string(index), 0, this);
+        m_resistor[i]->setEpin( 0, m_pin[index] );
+
+        m_pin[index+1] = new Pin( reid+"-ePin"+std::to_string(index+1), 0, this);
+        //m_pin[index+1]->setEnabled( !m_pullUp ); //
+        //m_pin[index+1]->setVisible( !m_pullUp ); //
+        m_resistor[i]->setEpin( 1, m_pin[index+1] );
+}   }
+
+void ResistorDip::deleteResistors( int d )
+{
+    if( d > m_size ) d = m_size;
+    int start = m_size-d;
+
+    for( int i=start*2; i<m_size*2; ++i ) deletePin( m_pin[i] );
+    for( int i=start;   i<m_size;   ++i ) delete m_resistor[i];
+    m_size = m_size-d;
+    m_resistor.resize( m_size );
+    m_pin.resize( m_size*2 );
+}
+
+void ResistorDip::setRes( double resist )
+{
+    if( resist < 1e-12 ) resist = 1e-12;
+    if( m_resist == resist ) return;
+    m_resist = resist;
+    m_changed = true;
+    if( !Simulator::self()->isRunning() ) updateStep();
+}
+
+void ResistorDip::setSize( int size )
+{
+    if( size == m_size || size < 1 ) return;
+   /* if( Simulator::self()->isRunning() )  CircuitWidget::self()->powerCircOff();*/
+
+    if     ( size < m_size ) deleteResistors( m_size-size );
+    else if( size > m_size ) createResistors( size-m_size );
+    
+   /* m_area = QRect( -10, -30, 20, m_size*8+4 );*/
+   
+}
+
+void ResistorDip::setPullUp( bool p )
+{
+    if( m_pullUp == p ) return;
+    m_pullUp = p;
+
+  /*  if( Simulator::self()->isRunning() )  CircuitWidget::self()->powerCircOff();*/
+
+    /*if( m_propDialog ) m_propDialog->showProp("PuVolt", p );*/
+
+    for( int i=0; i<m_size; i++ )
+    {
+        int index = i*2+1;
+        //m_pin[index]->setEnabled( !p );
+        //m_pin[index]->setVisible( !p );
+        if( p ) m_pin[index]->removeConnector();
+        else    m_pin[index]->setEnode( NULL );
+    }
+}
+
+//void ResistorDip::slotProperties()
+//{
+//    Component::slotProperties();
+//    //m_propDialog->showProp("PuVolt", m_pullUp );
+//}
+
+void ResistorDip::remove()
+{
+    deleteResistors( m_size );
+    Component::remove();
+}
+
+//void ResistorDip::paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget )
+//{
+//    Component::paint( p, option, widget );
+//    p->drawRoundRect( QRect( -9, -28, 18, m_size*8 ), 2, 2 );
+//
+//    Component::paintSelected( p );
+//}

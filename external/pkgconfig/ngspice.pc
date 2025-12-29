@@ -1,0 +1,8 @@
+prefix=/home/ros/下载/sim1/
+exec_prefix=${prefix}
+libdir=${exec_prefix}/external
+Name: libngspice
+Description: General-purpose circuit simulator
+Version: 43
+Libs: -L${libdir} -libngspice
+

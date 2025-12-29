@@ -1,0 +1,49 @@
+/***************************************************************************
+ *   Copyright (C) 2017 by Santiago González                               *
+ *                                                                         *
+ ***( see copyright.txt file at root folder )*******************************/
+
+/*   Modified (C) 2025 by easyEDAJLC Technology Group                      *
+ *   chensiyu@sz-jlc.com                                                   *
+ *                                                                         */
+
+#pragma once
+
+#include "logiccomponent.h"
+
+class LibraryItem;
+
+//伺服电机
+class Servo : public LogicComponent
+{
+    public:
+        Servo( std::string type, std::string id );
+        ~Servo();
+        
+ static Component* construct( std::string type, std::string id );
+ static LibraryItem* libraryItem();
+
+        double speed() { return m_speed; }
+        void setSpeed( double speed ) { m_speed = speed; }
+
+        double minPulse() { return m_minPulse; }
+        void setMinPulse( double w );
+
+        double maxPulse() { return m_maxPulse; }
+        void setMaxPulse( double w );
+
+        virtual void stamp() override;
+        virtual void updateStep() override;
+        virtual void voltChanged() override;
+
+    private:
+        double m_pos;            // Actual Angular position 0-180
+        double m_targetPos;      // Target Angular position 0-180
+        double m_speed;               // Angular speed sec/60º
+        double m_minPulse;        // Minimum pulse width,   0º
+        double m_maxPulse;        // Maximum pulse width, 180º
+        double m_minAngle;      // Angle to move evrey repaint
+
+        uint64_t m_pulseStart;              // Simulation step
+        uint64_t m_lastUpdate;              // Simulation step
+};
