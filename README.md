@@ -107,6 +107,6 @@ LCEDA_SIM/
 
 ## 🙏 致谢
 
-- Simulide 项目 ([Santiago González](https://github.com/santi-gonzalez))
+- Simulide 项目 ([simulide.com](https://https://simulide.com/p/))
 - ngspice 开发团队 ([ngspice 官方](http://ngspice.sourceforge.net/))
 - 所有项目贡献者
