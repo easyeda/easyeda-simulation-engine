@@ -1,6 +1,6 @@
 # LCEDA 电路仿真工具
 
-基于 ngspice 和 Simulide 的双引擎电路仿真工具，包含服务器模块和电路仿真模块。
+基于 NGspice 和 Simulide 的双引擎电路仿真工具，包含服务器模块和电路仿真模块。
 
 ## 📜 开源协议
 
@@ -12,7 +12,7 @@
    - 参见 [copyright.txt](copyright.txt)
 
 2. **修改和新增代码**  
-   - 版权归 easyEDAJLC Technology Group 所有
+   - 版权归 EasyEDA & JLC Technology Group 所有
    - 采用 GNU General Public License v3.0 (GPLv3) 协议
 
 ### 使用要求
@@ -25,7 +25,7 @@
 ## ⚙️ 架构概述
 
 ### 双仿真引擎架构
-1. **ngspice 引擎**
+1. **NGspice 引擎**
    - 提供精确的 SPICE 级电路仿真
    - 通过 sharedspice.h 接口集成
    - 使用 BSD 3-Clause 许可证
