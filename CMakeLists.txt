@@ -51,6 +51,33 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/public/include
 )
 
+# Third-party libraries. Windows links the prebuilt ngspice and tinyxml shipped
+# in external/; other platforms use the libraries installed on the system
+# (Debian/Ubuntu: libngspice0-dev, libtinyxml-dev), located through pkg-config
+# when it is available and through find_library otherwise.
+if(WIN32)
+    find_library(NGSPICE_LIBRARY NAMES ngspice PATHS ${CMAKE_SOURCE_DIR}/external/ngspice NO_DEFAULT_PATH)
+    find_library(TINYXML_LIB NAMES libtinyxml PATHS ${CMAKE_SOURCE_DIR}/external/tinyxml NO_DEFAULT_PATH)
+else()
+    find_package(PkgConfig QUIET)
+    if(PKG_CONFIG_FOUND)
+        pkg_check_modules(PC_NGSPICE QUIET ngspice)
+        pkg_check_modules(PC_TINYXML QUIET tinyxml)
+    endif()
+    find_library(NGSPICE_LIBRARY NAMES ngspice HINTS ${PC_NGSPICE_LIBRARY_DIRS})
+    find_library(TINYXML_LIB NAMES tinyxml HINTS ${PC_TINYXML_LIBRARY_DIRS})
+    if(NOT NGSPICE_LIBRARY OR NOT TINYXML_LIB)
+        message(FATAL_ERROR "ngspice and tinyxml development files are required "
+            "(Debian/Ubuntu: apt install libngspice0-dev libtinyxml-dev). "
+            "NGSPICE_LIBRARY=${NGSPICE_LIBRARY}, TINYXML_LIB=${TINYXML_LIB}")
+    endif()
+    # Distribution builds of tinyxml are compiled with TIXML_USE_STL. The header
+    # must be compiled with the same setting, otherwise TiXmlString::nullrep_ is
+    # left unresolved at link time. This has to precede add_subdirectory() so
+    # that it reaches every target (pch.h includes tinyxml.h).
+    add_definitions(-DTIXML_USE_STL)
+endif()
+
 add_subdirectory(src/cirSim/src)
 add_subdirectory(src/server/src)
 # 设置图标路径
@@ -108,10 +135,6 @@ target_precompile_headers(${PROJECT_EXECUTABLE} PRIVATE src/public/include/pch.h
 # server.cpp includes websocketpp as well, see src/server/src/CMakeLists.txt.
 set_target_properties(${PROJECT_EXECUTABLE} PROPERTIES CXX_STANDARD 17)
 
-find_library(NGSPICE_LIBRARY NAMES ngspice PATHS ${CMAKE_SOURCE_DIR}/external/ngspice NO_DEFAULT_PATH)
-find_library(TINYXML_LIB NAMES libtinyxml PATHS ${CMAKE_SOURCE_DIR}/external/tinyxml NO_DEFAULT_PATH)
-
-
 # link_directories(${PROJECT_SOURCE_DIR}/bin)
 # 链接外部库
 
@@ -141,10 +164,8 @@ else(Linux)
         ServerModule
         pthread
         dl
-        ncurses
         m 
         stdc++ 
-        readline
         
     )
     add_custom_command(TARGET ${PROJECT_EXECUTABLE} POST_BUILD
