@@ -105,6 +105,8 @@ add_executable(${PROJECT_EXECUTABLE}
     ${CMAKE_CURRENT_BINARY_DIR}/app.rc  # 添加资源文件
 )
 target_precompile_headers(${PROJECT_EXECUTABLE} PRIVATE src/public/include/pch.h)
+# server.cpp includes websocketpp as well, see src/server/src/CMakeLists.txt.
+set_target_properties(${PROJECT_EXECUTABLE} PROPERTIES CXX_STANDARD 17)
 
 find_library(NGSPICE_LIBRARY NAMES ngspice PATHS ${CMAKE_SOURCE_DIR}/external/ngspice NO_DEFAULT_PATH)
 find_library(TINYXML_LIB NAMES libtinyxml PATHS ${CMAKE_SOURCE_DIR}/external/tinyxml NO_DEFAULT_PATH)
