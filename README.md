@@ -62,6 +62,26 @@ cmake --build . --parallel 4
 ```
 编译完成后，可执行文件将生成在 `bin/` 目录下。
 
+### Linux
+
+Tested on Ubuntu 24.04 with CMake 3.30, GCC 13, ngspice 42 and tinyxml 2.6.2.
+On Linux the build links the ngspice and tinyxml libraries installed on the
+system instead of the prebuilt Windows libraries in `external/`.
+
+```bash
+# Debian / Ubuntu
+sudo apt install build-essential cmake libngspice0-dev libtinyxml-dev
+
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j"$(nproc)"
+
+./bin/lceda-pro-sim-server
+```
+
+The executable is written to `bin/` and the `config/` directory is copied next
+to it. Note that the server listens on all interfaces (`0.0.0.0:51115`) by
+default, not only on localhost.
+
 ## 📂 项目结构
 
 ```text
