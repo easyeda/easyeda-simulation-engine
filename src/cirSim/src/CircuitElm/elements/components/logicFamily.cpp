@@ -7,7 +7,7 @@
  *   chensiyu@sz-jlc.com                                                   *
  *                                                                         */
 
-#include "logicfamily.h"
+#include "logicFamily.h"
 #include "circuit.h"
 #include "utils.h"
 #include <string_view>
