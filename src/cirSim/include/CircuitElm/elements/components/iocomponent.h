@@ -10,7 +10,7 @@
 #pragma once
 
 #include "component.h"
-#include "logicfamily.h"
+#include "logicFamily.h"
 
 class eElement;
 class IoPin;

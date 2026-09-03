@@ -10,7 +10,7 @@
 #pragma once
 
 #include "switch_base.h"
-#include "customButton.h"
+#include "custombutton.h"
 
 class PushBase : public SwitchBase
 {

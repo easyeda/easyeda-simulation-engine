@@ -19,7 +19,7 @@
 // #include "iopin.h"
 // #include "simulator.h"
 
-// #include "doubleprop.h"
+// #include "doubleProp.h"
 
 // #define tr(str) simulideTr("DS1621",str)
 
